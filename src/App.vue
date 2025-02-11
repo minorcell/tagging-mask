@@ -2,7 +2,6 @@
 import { ref, onMounted } from "vue";
 import Mask from "./components/Mask.vue";
 import { sleep } from "./utils/tools";
-import { Tagging } from "./utils/tagging";
 
 const currentIndex = ref(0);
 const maskRef = ref<InstanceType<typeof Mask> | null>(null);
@@ -26,8 +25,6 @@ const playNextStep = async () => {
   if (!maskRef.value) return;
 
   maskRef.value.show(data[currentIndex.value].key);
-
-  const element = new Tagging(data[currentIndex.value].key).getElement();
 
   if (currentIndex.value === data.length - 1) {
     await sleep(1000);
