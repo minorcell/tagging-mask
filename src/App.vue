@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import Mask from "./components/Mask.vue";
 
 const currentIndex = ref(0);
-const maskRef = ref(null);
+const maskRef = ref<InstanceType<typeof Mask> | null>(null);
 const data = [
   {
     key: "step1",
@@ -19,7 +19,7 @@ const data = [
 // 模拟多个step调用
 const MockNodeTaskPlayer = () => {
   setInterval(() => {
-    maskRef.value.show(data[currentIndex.value].key);
+    maskRef.value?.show(data[currentIndex.value].key);
     currentIndex.value = (currentIndex.value + 1) % data.length;
   }, 1000);
 };
@@ -41,7 +41,7 @@ onMounted(() => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .buttons {
   display: flex;
   gap: 20px;
