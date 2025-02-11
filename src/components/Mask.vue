@@ -5,7 +5,6 @@ import { Tagging } from "../utils/tagging";
 type IMask = {
   /** 显示蒙层并高亮指定元素 */
   show(key: string): void;
-
   /** 隐藏蒙层 */
   hide(): void;
 };
@@ -17,15 +16,14 @@ const highlightStyle = ref({});
 const show = (key: string) => {
   const tagging = new Tagging(key);
   const element = tagging.getElement();
-  console.log(element);
 
   if (element) {
     const rect = element.getBoundingClientRect();
     highlightStyle.value = {
-      top: `${rect.top}px`,
-      left: `${rect.left}px`,
-      width: `${rect.width}px`,
-      height: `${rect.height}px`,
+      top: `${rect.top - 5}px`,
+      left: `${rect.left - 5}px`,
+      width: `${rect.width + 10}px`,
+      height: `${rect.height + 10}px`,
     };
     isVisible.value = true;
   }
@@ -37,16 +35,18 @@ const hide = () => {
   highlightStyle.value = {};
 };
 
-defineExpose<IMask>({
-  show,
-  hide,
-});
+/** 阻止点击非高亮区域 */
+const blockClick = (event: MouseEvent) => {
+  event.stopPropagation();
+  event.preventDefault();
+};
 
+defineExpose<IMask>({ show, hide });
 </script>
 
 <template>
-  <div v-if="isVisible" class="mask-container">
-    <div class="mask"></div>
+  <div v-if="isVisible" class="mask-container" @click="blockClick">
+    <div class="mask" />
     <div class="highlight-box" :style="highlightStyle" />
   </div>
 </template>
@@ -55,7 +55,8 @@ defineExpose<IMask>({
 .mask-container {
   position: fixed;
   inset: 0;
-  pointer-events: none;
+  pointer-events: auto; /* 允许接收点击 */
+  z-index: 999; /* 确保遮罩层在最上层 */
 }
 
 .mask {
@@ -69,6 +70,7 @@ defineExpose<IMask>({
   background: transparent;
   box-shadow: 0 0 10px 5px rgba(255, 255, 0, 0.8);
   border-radius: 5px;
-  pointer-events: auto;
+  pointer-events: auto; /* 允许高亮元素点击 */
+  z-index: 10000; /* 确保高亮区域在遮罩层上方 */
 }
 </style>
